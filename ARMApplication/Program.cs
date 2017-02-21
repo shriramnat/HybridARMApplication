@@ -20,7 +20,7 @@ namespace ARMApplication
             // Authenticate to the specific Cloud's Resource Manager.
             azureCloud.Authenticate();
 
-            //Console.WriteLine(azureCloud.GetToken());
+            // Console.WriteLine(azureCloud.GetToken());
             string subscriptionId = "";
             string resourceGroupName = "";
 
