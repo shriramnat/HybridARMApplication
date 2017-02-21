@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 
 namespace ARMApplication
 {
@@ -8,8 +9,8 @@ namespace ARMApplication
         {
             Cloud azureCloud = new Cloud
             {
-                clientId = "",
-                clientSecret = "",
+                clientId = ConfigurationManager.AppSettings["clientId"],
+                clientSecret = ConfigurationManager.AppSettings["clientSecret"],
                 loginEndpoint = "https://login.windows.net/",
                 directoryTenantName = "microsoft.onmicrosoft.com",
                 armEndpoint = "https://management.azure.com/",
