@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Configuration;
 
 namespace ARMApplication
@@ -7,24 +8,25 @@ namespace ARMApplication
     {
         static void Main(string[] args)
         {
+            string subscriptionId = "";
+            string resourceGroupName = "";
+
+            var azureSettings = (NameValueCollection) ConfigurationManager.GetSection("azureAppSettings");
             Cloud azureCloud = new Cloud
             {
-                clientId = ConfigurationManager.AppSettings["clientId"],
-                clientSecret = ConfigurationManager.AppSettings["clientSecret"],
-                loginEndpoint = "https://login.windows.net/",
-                directoryTenantName = "microsoft.onmicrosoft.com",
-                armEndpoint = "https://management.azure.com/",
-                armResourceId = "https://management.azure.com/",
-                armApiVersion = "2016-09-01"
+                clientId = azureSettings["clientId"],
+                clientSecret = azureSettings["clientSecret"],
+                loginEndpoint = azureSettings["loginEndpoint"],
+                directoryTenantName = azureSettings["directoryTenantName"],
+                armEndpoint = azureSettings["armEndpoint"],
+                armResourceId = azureSettings["armResourceId"],
+                armApiVersion = azureSettings["armApiVersion"]
             };
 
             // Authenticate to the specific Cloud's Resource Manager.
             azureCloud.Authenticate();
-
             // Console.WriteLine(azureCloud.GetToken());
-            string subscriptionId = "";
-            string resourceGroupName = "";
-
+           
             #region Subscription Methods
             Console.WriteLine("Listing all subscriptions.");
             Console.WriteLine(azureCloud.ListSubscriptions());
@@ -42,31 +44,25 @@ namespace ARMApplication
             #endregion
 
             #region Compute
-            string computeApiVersion = "2017-03-30";
-            string computeNamespace = "Microsoft.Compute";
-            
             // Virtual Machines
             Console.WriteLine("Listing Virtual Machines in a Resource Group");
-            Console.WriteLine(azureCloud.ListResourcesByNamespaceInResourceGroup(subscriptionId, resourceGroupName, computeNamespace, "virtualmachines", computeApiVersion));
+            Console.WriteLine(azureCloud.ListResourcesByNamespaceInResourceGroup(subscriptionId, resourceGroupName, azureSettings["computeNamespace"], "virtualmachines", azureSettings["computeApiVersion"]));
             Console.WriteLine("Listing Virtual machine by Name");
-            Console.WriteLine(azureCloud.ListResourceByName(subscriptionId, resourceGroupName, computeNamespace, "virtualmachines", "shriqpab7-mn0", computeApiVersion));
+            Console.WriteLine(azureCloud.ListResourceByName(subscriptionId, resourceGroupName, azureSettings["computeNamespace"], "virtualmachines", "shriqpab7-mn0", azureSettings["computeApiVersion"]));
             #endregion
 
             #region Network
-            string networkApiVersion = "2016-12-01";
-            string networkNamespace = "Microsoft.Network";
-
             // Virtual Networks
             Console.WriteLine("Listing Virtual Networks in a Resource Group");
-            Console.WriteLine(azureCloud.ListResourcesByNamespaceInResourceGroup(subscriptionId, resourceGroupName, networkNamespace, "virtualnetworks", networkApiVersion));
+            Console.WriteLine(azureCloud.ListResourcesByNamespaceInResourceGroup(subscriptionId, resourceGroupName, azureSettings["networkNamespace"], "virtualnetworks", azureSettings["networkApiVersion"]));
             Console.WriteLine("Listing Virtual Network by Name");
-            Console.WriteLine(azureCloud.ListResourceByName(subscriptionId, resourceGroupName, networkNamespace, "virtualnetworks", "shriqpab7vnet", networkApiVersion));
+            Console.WriteLine(azureCloud.ListResourceByName(subscriptionId, resourceGroupName, azureSettings["networkNamespace"], "virtualnetworks", "shriqpab7vnet", azureSettings["networkApiVersion"]));
 
             // Public IP Addresses
             Console.WriteLine("Listing Public IP Addresses in a Resource Group");
-            Console.WriteLine(azureCloud.ListResourcesByNamespaceInResourceGroup(subscriptionId, resourceGroupName, networkNamespace, "publicIPAddresses", networkApiVersion));
+            Console.WriteLine(azureCloud.ListResourcesByNamespaceInResourceGroup(subscriptionId, resourceGroupName, azureSettings["networkNamespace"], "publicIPAddresses", azureSettings["networkApiVersion"]));
             Console.WriteLine("Listing Public IP Address by Name");
-            Console.WriteLine(azureCloud.ListResourceByName(subscriptionId, resourceGroupName, networkNamespace, "publicIPAddresses", "shriqpab7-publicip", networkApiVersion));
+            Console.WriteLine(azureCloud.ListResourceByName(subscriptionId, resourceGroupName, azureSettings["networkNamespace"], "publicIPAddresses", "shriqpab7-publicip", azureSettings["networkApiVersion"]));
             #endregion
         }
     }
