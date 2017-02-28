@@ -67,6 +67,12 @@ namespace ARMApplication
             Console.WriteLine("Listing Public IP Address by Name");
             Console.WriteLine(azureCloud.ListResourceByName(subscriptionId, resourceGroupName, azureSettings["networkNamespace"], "publicIPAddresses", publicIpAddressName, azureSettings["networkApiVersion"]));
             #endregion
+
+            #region Usage
+
+            Console.WriteLine("Getting Usage Aggregates");
+            Console.WriteLine(azureCloud.ListUsage(subscriptionId, azureSettings["usageNamespace"], "UsageAggregates", azureSettings["usageApiVersion"], new DateTime(2015, 03, 01, 00, 00, 00), new DateTime(2015, 05, 18, 00, 00, 00)));
+            #endregion
         }
     }
 }

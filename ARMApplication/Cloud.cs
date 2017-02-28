@@ -3,6 +3,7 @@ using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace ARMApplication
 {
@@ -65,7 +66,7 @@ namespace ARMApplication
         /// <summary>
         /// Initializes a new instance of the <see cref="Cloud"/> class.
         /// </summary>
-        public Cloud() {}
+        public Cloud() { }
 
         /// <summary>
         /// Uses ADAL to authenticate the Service Principal and returns the Authentication Result.
@@ -99,7 +100,8 @@ namespace ARMApplication
         /// Gets the token.
         /// </summary>
         /// <returns></returns>
-        public string GetToken() {
+        public string GetToken()
+        {
             return _token;
         }
 
@@ -124,7 +126,7 @@ namespace ARMApplication
         {
             string url = String.Format("{0}subscriptions/{1}?api-version={2}",
                 armEndpoint, subscriptionId, armApiVersion);
-  
+
             return CallAPI(url);
         }
 
@@ -136,7 +138,7 @@ namespace ARMApplication
         public string ListResourceGroups(string subscriptionId)
         {
             string url = String.Format("{0}subscriptions/{1}/resourcegroups?api-version={2}",
-                armEndpoint,subscriptionId, armApiVersion);
+                armEndpoint, subscriptionId, armApiVersion);
 
             return CallAPI(url);
         }
@@ -200,6 +202,23 @@ namespace ARMApplication
         {
             string url = String.Format("{0}subscriptions/{1}/resourcegroups/{2}/providers/{3}/{4}/{5}?api-version={6}",
                 armEndpoint, subscriptionId, resourceGroupName, resourceNamespace, resourceTypeName, resourceName, apiVersion);
+            
+            return CallAPI(url);
+        }
+        /// <summary>
+        /// Lists the usage.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="resourceNamespace">The resource namespace.</param>
+        /// <param name="resourceTypeName">Name of the resource type.</param>
+        /// <param name="apiVersion">The API version.</param>
+        /// <param name="reportedStartTime">The reported start time.</param>
+        /// <param name="reportedEndTime">The reported end time.</param>
+        /// <returns></returns>
+        public string ListUsage(string subscriptionId, string resourceNamespace, string resourceTypeName, string apiVersion, DateTime reportedStartTime, DateTime reportedEndTime)
+        {
+            string url = string.Format("{0}subscriptions/{1}/providers/{2}/{3}?api-version={4}&reportedstartTime={5}&reportedEndTime={6}",
+                  armEndpoint, subscriptionId, resourceNamespace, resourceTypeName, apiVersion, HttpUtility.UrlEncode(reportedStartTime.ToString("yyyy-MM-ddTHH:mm:ssZ")), HttpUtility.UrlEncode(reportedEndTime.ToString("yyyy-MM-ddTHH:mm:ssZ")));
 
             return CallAPI(url);
         }
@@ -210,19 +229,19 @@ namespace ARMApplication
         /// <param name="url">The URL.</param>
         /// <param name="urlParameters">The URL parameters.</param>
         /// <returns></returns>
-        public string CallAPI(string url, string urlParameters = "")
+        public string CallAPI(string url)
         {
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(url);
+            //client.BaseAddress = new Uri(url);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-            
+
             // Add an Accept header for JSON format.
             client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
-            
+
             // List data response.
-            HttpResponseMessage response = client.GetAsync(urlParameters).Result;  // Blocking call!
-            return (response.IsSuccessStatusCode ? response.Content.ReadAsStringAsync().Result : String.Concat(response.StatusCode, response.ReasonPhrase));    
+            HttpResponseMessage response = client.GetAsync(url).Result;
+            return (response.IsSuccessStatusCode ? response.Content.ReadAsStringAsync().Result : String.Concat(response.StatusCode, response.ReasonPhrase));
         }
 
     }
