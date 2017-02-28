@@ -202,7 +202,7 @@ namespace ARMApplication
         {
             string url = String.Format("{0}subscriptions/{1}/resourcegroups/{2}/providers/{3}/{4}/{5}?api-version={6}",
                 armEndpoint, subscriptionId, resourceGroupName, resourceNamespace, resourceTypeName, resourceName, apiVersion);
-            
+
             return CallAPI(url);
         }
         /// <summary>
@@ -231,17 +231,25 @@ namespace ARMApplication
         /// <returns></returns>
         public string CallAPI(string url)
         {
-            HttpClient client = new HttpClient();
-            //client.BaseAddress = new Uri(url);
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+            try
+            {
+                HttpClient client = new HttpClient();
+                //client.BaseAddress = new Uri(url);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
 
-            // Add an Accept header for JSON format.
-            client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
+                // Add an Accept header for JSON format.
+                client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
 
-            // List data response.
-            HttpResponseMessage response = client.GetAsync(url).Result;
-            return (response.IsSuccessStatusCode ? response.Content.ReadAsStringAsync().Result : String.Concat(response.StatusCode, response.ReasonPhrase));
+                // List data response.
+                HttpResponseMessage response = client.GetAsync(url).Result;
+                return (response.IsSuccessStatusCode ? response.Content.ReadAsStringAsync().Result : String.Concat(response.StatusCode, response.ReasonPhrase));
+            }
+            catch (Exception e)
+            {
+               return String.Format("{0} \n\n{1}", e.Message, e.InnerException != null ? e.InnerException.Message : "");
+               
+            }
         }
 
     }
