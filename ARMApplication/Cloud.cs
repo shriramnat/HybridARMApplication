@@ -1,4 +1,5 @@
 ﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -243,6 +244,8 @@ namespace ARMApplication
 
                 // List data response.
                 HttpResponseMessage response = client.GetAsync(url).Result;
+                //TODO: Deserialize responses into appropriate Json objects as needed
+                //dynamic parsedResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
                 return (response.IsSuccessStatusCode ? response.Content.ReadAsStringAsync().Result : String.Concat(response.StatusCode, response.ReasonPhrase));
             }
             catch (Exception e)
