@@ -219,11 +219,19 @@ namespace ARMApplication
         public string ListUsage(string subscriptionId, string resourceNamespace, string resourceTypeName, string apiVersion, DateTime reportedStartTime, DateTime reportedEndTime)
         {
             string url = string.Format("{0}subscriptions/{1}/providers/{2}/{3}?api-version={4}&reportedstartTime={5}&reportedEndTime={6}",
-                  armEndpoint, subscriptionId, resourceNamespace, resourceTypeName, apiVersion, HttpUtility.UrlEncode(reportedStartTime.ToString("yyyy-MM-ddTHH:mm:ssZ")), HttpUtility.UrlEncode(reportedEndTime.ToString("yyyy-MM-ddTHH:mm:ssZ")));
+                  armEndpoint, subscriptionId, resourceNamespace, resourceTypeName, apiVersion, 
+                  HttpUtility.UrlEncode(reportedStartTime.ToString("yyyy-MM-ddTHH:mm:ssZ")), HttpUtility.UrlEncode(reportedEndTime.ToString("yyyy-MM-ddTHH:mm:ssZ")));
 
             return CallAPI(url);
         }
 
+        public string ListRateCard(string subscriptionId, string resourceNamespace, string resourceTypeName, string apiVersion)
+        {
+            string url = string.Format("{0}subscriptions/{1}/providers/{2}/{3}?api-version={4}&$filter=OfferDurableId eq 'MS-AZR-0003p' and Currency eq 'USD' and Locale eq 'en-US' and RegionInfo eq 'US'",
+                  armEndpoint, subscriptionId, resourceNamespace, resourceTypeName, apiVersion);
+
+            return CallAPI(url);
+        }
         /// <summary>
         /// Calls the API.
         /// </summary>
