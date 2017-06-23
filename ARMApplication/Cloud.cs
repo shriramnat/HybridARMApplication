@@ -14,33 +14,6 @@ namespace ARMApplication
         /// The token
         /// </summary>
         private string _token;
-        /// <summary>
-        /// Gets or sets the client identifier.
-        /// </summary>
-        /// <value>
-        /// The client identifier.
-        /// </value>
-        public string clientId { get; set; }
-        /// <summary>
-        /// Gets or sets the client secret.
-        /// </summary>
-        /// <value>
-        /// The client secret.
-        /// </value>
-        public string clientSecret { get; set; }
-        /// <summary>
-        /// Gets or sets the name of the directory tenant.
-        /// </summary>
-        /// <value>
-        /// The name of the directory tenant.
-        /// </value>
-        public string directoryTenantName { get; set; }
-        /// <summary>
-        /// Gets or sets the login endpoint.
-        /// </summary>
-        /// <value>
-        /// The login endpoint.
-        /// </value>
         public string loginEndpoint { get; set; }
         /// <summary>
         /// Gets or sets the arm resource identifier.
@@ -67,7 +40,7 @@ namespace ARMApplication
         /// <summary>
         /// Initializes a new instance of the <see cref="Cloud"/> class.
         /// </summary>
-        public Cloud() { }
+        public Cloud() {}
 
         /// <summary>
         /// Uses ADAL to authenticate the Service Principal and returns the Authentication Result.
@@ -76,10 +49,10 @@ namespace ARMApplication
         /// Authentication Result containing the Access Token
         /// </returns>
         /// <exception cref="InvalidOperationException">Could not get the token</exception>
-        private async Task<AuthenticationResult> AuthenticateAsync()
+        private async Task<AuthenticationResult> AuthenticateAsync(string clientId, string clientSecret, string directoryTenantName)
         {
-            var cc = new ClientCredential(this.clientId, this.clientSecret);
-            var context = new AuthenticationContext(String.Concat(this.loginEndpoint, this.directoryTenantName));
+            var cc = new ClientCredential(clientId, clientSecret);
+            var context = new AuthenticationContext(String.Concat(this.loginEndpoint.TrimEnd('/'), "/", directoryTenantName));
             var authenticationResult = await context.AcquireTokenAsync(this.armResourceId, cc);
             if (authenticationResult == null)
             {
@@ -89,12 +62,27 @@ namespace ARMApplication
         }
 
         /// <summary>
+        /// Sets the authentication endpoints.
+        /// </summary>
+        private void SetAuthenticationEndpoints()
+        {
+            string url = String.Format("{0}/metadata/endpoints?api-version=1.0", this.armEndpoint);
+            HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            HttpResponseMessage response = client.GetAsync(url).Result;
+            JObject joResponse = JObject.Parse(response.Content.ReadAsStringAsync().Result);
+            this.loginEndpoint = (joResponse["authentication"])["loginEndpoint"].ToString();
+            this.armResourceId = (joResponse["authentication"])["audiences"][0].ToString();
+        }
+
+        /// <summary>
         /// Authenticates the Service Principal and sets the token variable.
         /// </summary>
-        public void Authenticate()
+        public void Authenticate(string clientId, string clientSecret, string directoryTenantName)
         {
-            Task<AuthenticationResult> test = AuthenticateAsync();
-            _token = test.Result.AccessToken;
+            SetAuthenticationEndpoints();
+            Task<AuthenticationResult> response = AuthenticateAsync(clientId, clientSecret, directoryTenantName);
+            _token = response.Result.AccessToken;
         }
 
         /// <summary>

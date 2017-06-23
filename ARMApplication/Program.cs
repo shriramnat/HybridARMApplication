@@ -14,22 +14,21 @@ namespace ARMApplication
 
             Cloud azureCloud = new Cloud
             {
-                clientId = loginInformation["clientId"], // Change this value in app.config
-                clientSecret = loginInformation["clientSecret"], // Change this value in app.config
-                loginEndpoint = loginInformation["loginEndpoint"],
-                directoryTenantName = loginInformation["directoryTenantName"],
-                armEndpoint = loginInformation["armEndpoint"],
-                armResourceId = loginInformation["armResourceId"],
-                armApiVersion = resourceProviders["armApiVersion"]
+                armEndpoint = loginInformation["armEndpoint"], // Change this value in app.config
+                armApiVersion = resourceProviders["armApiVersion"] // Change this value in app.config
             };
 
+            string clientId = loginInformation["clientId"]; // Change this value in app.config
+            string clientSecret = loginInformation["clientSecret"]; // Change this value in app.config
+            string directoryTenantName = loginInformation["directoryTenantName"]; // Change this value in app.config
+
             // Authenticate to the specific Cloud's Resource Manager.
-            azureCloud.Authenticate();
+            azureCloud.Authenticate(clientId, clientSecret, directoryTenantName);
             // Console.WriteLine(azureCloud.GetToken());
 
             #region Subscription Methods
-            //Console.WriteLine("Listing all subscriptions.");
-            //Console.WriteLine(azureCloud.ListSubscriptions());
+            Console.WriteLine("Listing all subscriptions.");
+            Console.WriteLine(azureCloud.ListSubscriptions());
             //Console.WriteLine("Getting Subscription by Subscription Id.");
             //Console.WriteLine(azureCloud.GetSubscriptionById(resourceNames["subscriptionId"]));
             #endregion
