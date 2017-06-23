@@ -14,6 +14,12 @@ namespace ARMApplication
         /// The token
         /// </summary>
         private string _token;
+        /// <summary>
+        /// Gets or sets the login endpoint.
+        /// </summary>
+        /// <value>
+        /// The login endpoint.
+        /// </value>
         public string loginEndpoint { get; set; }
         /// <summary>
         /// Gets or sets the arm resource identifier.
